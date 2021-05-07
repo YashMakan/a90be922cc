@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://ogp.me/ns/fb#">
+
+<!-- Mirrored from thepirat000.github.io/spleeter-api/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 07 May 2021 11:41:34 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="utf-8" />
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Splitter</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta property="og:image" content="https://i.imgur.com/xrF9QUG.png" />
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://thepirat000.github.io/spleeter-api/splitter.css">
+
+    <!-- <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css"> -->
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div id="server-down-div" style="display: none;">
+        <h2>Server currently down</h2>
+        <p id="server-down-text"></p>
+    </div>
+    <div id="big-one" style="max-width: 640px; margin: 0 auto;">
+        <div class="banner-message">
+
+
+            <div class="app-title">
+                <span style="margin: 0 auto;">
+                    Audio Splitter
+                </span>
+            </div>
+
+
+            <div id="div-config">
+                <div id="presets-section">
+                    <span style="font-weight: bold;">Presets: </span>
+                    <a href="https://thepirat000.github.io/spleeter-api/audio/karaoke" onclick="return presetClick('audio-karaoke');">Karaoke</a>
+                    |
+                    <a href="https://thepirat000.github.io/spleeter-api/video/karaoke" onclick="return presetClick('video-karaoke');">Video Karaoke</a>
+                    |
+                    <a href="https://thepirat000.github.io/spleeter-api/audio/vocals" onclick="return presetClick('audio-vocals');">Vocals</a>
+                    |
+                    <a href="https://thepirat000.github.io/spleeter-api/audio/bassless" onclick="return presetClick('audio-bassless');">Bassless</a>
+                    |
+                    <a href="https://thepirat000.github.io/spleeter-api/audio/drumless" onclick="return presetClick('audio-drumless');">Drumless</a>
+                    |
+                    <a href="https://thepirat000.github.io/spleeter-api/default" onclick="return presetClick('default');">Default</a>
+                </div>
+                <div>
+                    <span class="section-title">Mode</span>
+                    <select id='type' title="Type">
+                        <option value='2stems'>2 stems (Vocals + Karaoke)</option>
+                        <option value='4stems' selected>4 stems (Bass, Drums, Vocals, Other)</option>
+                        <option value='5stems'>5 stems (Piano, Bass, Drums, Vocals, Other)</option>
+                    </select>
+                </div>
+                <div id="container-stems">
+                    <br />
+                    <span class="section-title">Include stems</span>
+                    <div id="div-stems" style="display:none; background-color: #EEEEEE;">
+                        <div class="_2stems">
+                            <input id="toggle-accompaniment" value="accompaniment" type="checkbox" checked>
+                            <label for="toggle-accompaniment">Accompaniment</label>
+                        </div>
+                        <div class="_4stems _5stems">
+                            <input id="toggle-bass" value="bass" type="checkbox" checked>
+                            <label for="toggle-bass">Bass</label>
+                        </div>
+                        <div class="_4stems _5stems">
+                            <input id="toggle-drums" value="drums" type="checkbox" checked>
+                            <label for="toggle-drums">Drums</label>
+                        </div>
+                        <div class="_4stems _5stems">
+                            <input id="toggle-other" value="other" type="checkbox" checked>
+                            <label for="toggle-other">Other</label>
+                        </div>
+                        <div class="_5stems">
+                            <input id="toggle-piano" value="piano" type="checkbox" checked>
+                            <label for="toggle-piano">Piano</label>
+                        </div>
+                        <div class="_2stems _4stems _5stems">
+                            <input id="toggle-vocals" value="vocals" type="checkbox" checked>
+                            <label for="toggle-vocals">Vocals</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="container-options">
+                    <br />
+                    <span class="section-title">Options</span>
+                    <div id="options">
+                        <div>
+                            <div>
+                                <input type="checkbox" id="chk-hf" value="hf" checked> <label for="chk-hf" title="Check to include an average of the high frequencies (>11khz)">Include high frequencies</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="container-output">
+                    <br />
+                    <span class="section-title">Output type</span>
+                    <div class="output-type">
+                        <div style="display: block;">
+                            <input id="rad-zip" name="output-type" type="radio" value=".zip">
+                            <label for="rad-zip">Separated audio stems (.zip)</label>
+                        </div>
+                        <div style="display: block;">
+                            <input id="rad-mp3" name="output-type" value=".mp3" type="radio" checked>
+                            <label for="rad-mp3">Single audio mix (.mp3)</label>
+                        </div>
+                        <div style="display: block;">
+                            <input id="rad-mp4" name="output-type" value=".mp4" type="radio">
+                            <label for="rad-mp4">Video + audio mix (.mp4)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tabs">
+                <ul id="tabs-nav">
+                    <li><a href="#tab1">YouTube</a></li>
+                    <li><a href="#tab2">File</a></li>
+                </ul>
+
+                <div id="tabs-content">
+                    <div id="tab1" class="tab-content">
+                        <div id="div-search" style="display:none;" class="banner-message">
+                            <div>
+                                <div style="margin-bottom: 7px;">
+                                    <input type="checkbox" id="chk-cc" value="cc"> <label style="font-size: 17px;" for="chk-cc" title="Check to only include videos with closed captions (subtitles) on the search">Only videos with subtitles</label>
+                                </div>
+                                <div id="input-search-section">
+                                    <input id="search" class="search" autocapitalize="none" autocomplete="on" name="search_query" type="text" spellcheck="false" placeholder="YouTube Search" style="outline: none; text-align: center;">
+                                    <button id="btn-search" type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                            <div id="search-section" style="display:none;">
+                                <div id="accordion">
+                                    <div id="accordion-header">Search results</div>
+                                    <div id="search-results">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div id="div-main" class="banner-message">
+                            <div>
+                                <input type="text" id="url" class="search" value="" placeholder="YouTube URL or Video ID" style="min-width: 240px; text-align: center; width:100%;" />
+                            </div>
+                            <div id="video-info">
+                                <span id="video-title"></span>
+                                <div id="duration"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab2" class="tab-content">
+                        <div class="banner-message">
+                            <div class="dropzone-container">
+                                <form id="uploader" class="dropzone-drop-area">
+                                    <input type="hidden" name="includeHf" id="file-hf" />
+                                    <input type="hidden" name="format" id="file-format" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div><button id="btn-split" class="split-button">Split</button></div>
+                <div id="extra-buttons" style="font-size: small; padding-top: 10px;">
+                    <a href="https://thepirat000.github.io/spleeter-api/audio/original" onclick="return originalDownloadClick('audio');">Original audio</a>
+                    |
+                    <a href="https://thepirat000.github.io/spleeter-api/video/original" onclick="return originalDownloadClick('video');">Original video</a>
+                </div>
+            </div>
+
+            <footer class="border-top footer text-muted">
+                <div class="container">
+                    <p>&copy; 2019 ThePirat - <a href="https://github.com/thepirat000/spleeter-api">Source code</a> - Powered by <a href="https://github.com/deezer/spleeter">Deezer's Spleeter</a></p>
+                    <span style="margin: 0 auto; padding: 10px 0px 0px 0px; vertical-align: middle;"><a href="https://paypal.me/thepirat000"><img src="https://img.shields.io/badge/Donate-critical" /></a></span>
+					<span style="margin: 0 auto; padding: 10px 0px 0px 0px; vertical-align: middle;"><a href="https://github.com/thepirat000/spleeter-api/stargazers"><img src="https://img.shields.io/github/stars/thepirat000/spleeter-api?label=Star%20this%20project&amp;social" /></a></span>
+                </div>
+            </footer>
+
+            <div id="div-client-geo">
+                <span id="client-geo"></span>
+            </div>
+
+        </div>
+    </div>
+    <div id="result-final">NO RESULT</div>
+    <div id="wait-dialog" class="modal">
+        <div class="loader" id="spinner" style="display:none;"></div>
+        <div>
+            Processing. Please wait a few minutes...
+        </div>
+        <button id="btn-close-wait">Close</button>
+    </div>
+
+    <script type="text/javascript" src="splitter.js"></script>
+
+    <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
+</body>
+
+<!-- Mirrored from thepirat000.github.io/spleeter-api/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 07 May 2021 11:41:34 GMT -->
+</html>
